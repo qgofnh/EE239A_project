@@ -19,6 +19,8 @@ rec_motor_count = sum(com_train['target'] == 1) + sum(com_test['target'] == 1)
 rec_base_count = sum(com_train['target'] == 2) + sum(com_test['target'] == 2)
 rec_hock_count = sum(com_train['target'] == 3) + sum(com_test['target'] == 3)
 
+print "hello"
+
 hist = pd.DataFrame({'count': [com_graphics_count,com_misc_count,com_pc_hard_count,com_mac_hard_count,
                                rec_auto_count,rec_motor_count,rec_base_count,rec_hock_count]})
 

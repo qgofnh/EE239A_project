@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/.idea/current_project.iml" filepath="$PROJECT_DIR$/.idea/current_project.iml" />
+||||||| merged common ancestors
+      <module fileurl="file://$PROJECT_DIR$/.idea/EE239AS_project_2.iml" filepath="$PROJECT_DIR$/.idea/EE239AS_project_2.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/.idea/EE239AS_project_2.iml" filepath="$PROJECT_DIR$/.idea/EE239AS_project_2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/current_project.iml" filepath="$PROJECT_DIR$/.idea/current_project.iml" />
+>>>>>>> 26fb598049086a79997c3c5359c0ef0c6bf2fc77
     </modules>
   </component>
 </project>

@@ -5,8 +5,6 @@ from sklearn.feature_extraction import text
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
-stop_words = text.ENGLISH_STOP_WORDS
-
 categories_computer = ['comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware']
 categories_recreation = ['rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey']
 
@@ -18,14 +16,21 @@ rec_test = fetch_20newsgroups(subset='test', categories=categories_recreation, s
 categories_computer = ['comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware']
 categories_recreation = ['rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey']
 
+# tokenizing text
 
-count_vect = CountVectorizer()
+stop_words = text.ENGLISH_STOP_WORDS
+# print(type(stop_words))
+count_vect = CountVectorizer('english')
+# count_vect = CountVectorizer(stop_words=stop_words)
+
 
 X1_train_counts = count_vect.fit_transform(com_train.data)
 
-#tf-idf
+# tf-idf
 tfidf_transformer = TfidfTransformer()
-
 X1_train_tfidf = tfidf_transformer.fit_transform(X1_train_counts)
-print (X1_train_tfidf)
+X1_array= X1_train_tfidf.toarray()
+print('numbers of terms extracted: ', len(X1_array))
+
+
 

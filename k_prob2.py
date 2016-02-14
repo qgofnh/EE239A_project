@@ -20,8 +20,8 @@ categories_recreation = ['rec.autos', 'rec.motorcycles', 'rec.sport.baseball', '
 
 stop_words = text.ENGLISH_STOP_WORDS
 # print(type(stop_words))
-count_vect = CountVectorizer('english')
-# count_vect = CountVectorizer(stop_words=stop_words)
+# count_vect = CountVectorizer('english')
+count_vect = CountVectorizer(lowercase= True, max_df=0.95, stop_words = stop_words)
 
 
 X1_train_counts = count_vect.fit_transform(com_train.data)
@@ -31,6 +31,11 @@ tfidf_transformer = TfidfTransformer()
 X1_train_tfidf = tfidf_transformer.fit_transform(X1_train_counts)
 X1_array= X1_train_tfidf.toarray()
 print('numbers of terms extracted: ', len(X1_array))
+
+
+
+
+
 
 
 

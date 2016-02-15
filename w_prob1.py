@@ -1,27 +1,81 @@
 from sklearn.datasets import fetch_20newsgroups
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction import text
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.decomposition import TruncatedSVD
+from sklearn.naive_bayes import MultinomialNB
+from sklearn import svm
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import roc_curve, auc
+from nltk import word_tokenize
+from nltk.stem.porter import PorterStemmer
+import string
 
-categories_computer = [ 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware']
-categories_recreation = ['rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey']
+stemmer = PorterStemmer()
+def stem_tokens(tokens, stemmer):
+    stemmed = []
+    for item in tokens:
+        stemmed.append(stemmer.stem(item))
+    return stemmed
 
-com_train = fetch_20newsgroups(subset='train', categories=categories_computer, shuffle=True, random_state=42)
-rec_train = fetch_20newsgroups(subset='train', categories=categories_recreation, shuffle=True, random_state=42)
-com_test = fetch_20newsgroups(subset='test', categories=categories_computer, shuffle=True, random_state=42)
-rec_test = fetch_20newsgroups(subset='test', categories=categories_recreation, shuffle=True, random_state=42)
+def tokenize(text):
+    text = " ".join([ch for ch in text if ch not in string.punctuation])
+    tokens = word_tokenize(text)
+    # tokens = [i for i in tokens if i not in string.punctuation]
+    stems = stem_tokens(tokens, stemmer)
+    return stems
 
-com_graphics_count = sum(com_train['target'] == 0) + sum(com_test['target'] == 0)
-com_misc_count = sum(com_train['target'] == 1) + sum(com_test['target'] == 1)
-com_pc_hard_count = sum(com_train['target'] == 2) + sum(com_test['target'] == 2)
-com_mac_hard_count = sum(com_train['target'] == 3) + sum(com_test['target'] == 3)
-rec_auto_count = sum(rec_train['target'] == 0) + sum(rec_test['target'] == 0)
-rec_motor_count = sum(rec_train['target'] == 1) + sum(rec_test['target'] == 1)
-rec_base_count = sum(rec_train['target'] == 2) + sum(rec_test['target'] == 2)
-rec_hock_count = sum(rec_train['target'] == 3) + sum(rec_test['target'] == 3)
+categories = [ 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
+                        'rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey']
 
+training_data = fetch_20newsgroups(subset='train', categories=categories, shuffle=True, random_state=42)
+test_data = fetch_20newsgroups(subset='test', categories=categories, shuffle=True, random_state=42)
+
+counts = [sum(training_data['target'] == i) for i in range(8)]
+
+hist = pd.DataFrame({'count': counts})
+
+plt.figure()
+hist.plot(kind='bar',alpha=0.5)
+
+###############################################
+vectorizer = CountVectorizer(min_df=1,tokenizer=tokenize,stop_words=text.ENGLISH_STOP_WORDS)
+tfidf = TfidfTransformer(sublinear_tf=True, use_idf=True)
+svd = TruncatedSVD(n_components=50, random_state=1, algorithm="arpack")
+
+vectorizer.fit(training_data['data'])
 print "hello"
+X_train_vec = vectorizer.transform(training_data['data'])
+X_train_tfidf = tfidf.fit_transform(X_train_vec)
+svd.fit((X_train_tfidf))
+X_train = svd.fit_transform(X_train_tfidf)
+print X_train[0]
+y_train = [sum([kind == 0, kind == 1, kind == 2, kind == 3]) for kind in training_data['target']]
 
-hist = pd.DataFrame({'count': [com_graphics_count,com_misc_count,com_pc_hard_count,com_mac_hard_count,
-                               rec_auto_count,rec_motor_count,rec_base_count,rec_hock_count]})
+nb = MultinomialNB().fit(X_train, y_train)
+linear_svm = svm.SVC(kernel='linear',C=0).fit(X_train,y_train)
 
-hist.plot(kind='bar', alpha=0.5)
+X_test_vec = vectorizer.transform(test_data['data'])
+X_test_tfidf = tfidf.transform(X_test_vec)
+X_test = svd.transform(X_test_tfidf)
+y_test = [sum([kind == 0, kind == 1, kind == 2, kind == 3]) for kind in test_data['target']]
+
+y_predict = linear_svm.predict(X_test)
+print sum(y_predict == y_test) / float(len(y_predict))
+
+y_score = linear_svm.decision_function(X_test)
+precison, recall, threshold = precision_recall_curve(y_test,y_score)
+plt.plot(precison,recall)
+
+fpr, tpr, thr = roc_curve(y_test,y_score)
+roc_auc = auc(fpr,tpr)
+plt.plot(fpr,tpr)
+
+l = []
+for k in vectorizer.vocabulary_:
+    l.append((vectorizer.vocabulary_[k],k))
+
+l.sort(reverse=True)

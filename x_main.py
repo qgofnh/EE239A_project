@@ -8,6 +8,7 @@ categories = [ 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hard
 a = [len(fetch_20newsgroups(subset='train', categories=[i], shuffle=True, random_state=42).data) for i in categories]
 
 
+
 #################################### a) plot histogram
 plt.bar(np.arange(len(a)), a, 0.9, align='center', alpha=0.5)
 plt.xticks(np.arange(len(a)),categories,rotation = 20,ha = 'right')
@@ -20,4 +21,12 @@ plt.ylabel('Count')
 #################################### b) remove stop word
 stop_words = text.ENGLISH_STOP_WORDS
 print len(stop_words)
+
+# print a
+plt.bar(np.arange(len(a)), a, 0.5, align='center', alpha=0.5)
+plt.xticks(np.arange(len(a)),categories,rotation=20,ha = 'right')
+plt.show()
+plt.xlabel('Categories')
+plt.ylabel('Count')
+
 

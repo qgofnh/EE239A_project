@@ -9,10 +9,10 @@ a = [len(fetch_20newsgroups(subset='train', categories=[i], shuffle=True, random
 
 
 #################################### a) plot histogram
-# plt.bar(np.arange(len(a)), a, 0.5, align='center', alpha=0.5)
-# plt.xticks(np.arange(len(a)),categories)
-# plt.xlabel('Categories')
-# plt.ylabel('Count')
+plt.bar(np.arange(len(a)), a, 0.9, align='center', alpha=0.5)
+plt.xticks(np.arange(len(a)),categories,rotation = 20,ha = 'right')
+plt.xlabel('Categories')
+plt.ylabel('Count')
 # plt.show()
 #################################### plt.show()
 

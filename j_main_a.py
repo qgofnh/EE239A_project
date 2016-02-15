@@ -10,13 +10,13 @@ print a
 
 hist = {categories[i]:[a[i]] for i in range(8)}
 
-#import pandas as pd
-#import matplotlib.pyplot as plt
-#import numpy as np
-#plt.figure()
-#plt.bar(np.arange(len(a)), a, 0.9, align='center', alpha=0.5)
-#plt.xticks(np.arange(len(a)),categories,rotation = 20,ha = 'right')
-#plt.show()
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import numpy as np
+# plt.figure()
+# plt.bar(np.arange(len(a)), a, 0.9, align='center', alpha=0.5)
+# plt.xticks(np.arange(len(a)),categories,rotation = 20,ha = 'right')
+# plt.show()
 
 from sklearn.feature_extraction.text import CountVectorizer
 vectorizer = CountVectorizer(min_df=1)

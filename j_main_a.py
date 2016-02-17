@@ -6,3 +6,11 @@ categories = [ 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hard
 a = [len(fetch_20newsgroups(subset='train', categories=[i], shuffle=True, random_state=42).data) for i in categories]
 print a
 
+
+
+
+
+
+
+
+

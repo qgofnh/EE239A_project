@@ -22,7 +22,7 @@ def stem_tokens(tokens, stemmer):
     return stemmed
 
 def tokenize(text):
-    text = " ".join([ch for ch in text if ch not in string.punctuation])
+    text = "".join([ch for ch in text if ch not in string.punctuation])
     tokens = word_tokenize(text)
     # tokens = [i for i in tokens if i not in string.punctuation]
     stems = stem_tokens(tokens, stemmer)
@@ -57,7 +57,7 @@ print X_train[0]
 y_train = [sum([kind == 0, kind == 1, kind == 2, kind == 3]) for kind in training_data['target']]
 
 nb = MultinomialNB().fit(X_train, y_train)
-linear_svm = svm.SVC(kernel='linear',C=0).fit(X_train,y_train)
+linear_svm = svm.SVC(kernel='linear',C=1).fit(X_train,y_train)
 
 X_test_vec = vectorizer.transform(test_data['data'])
 X_test_tfidf = tfidf.transform(X_test_vec)
@@ -67,7 +67,7 @@ y_test = [sum([kind == 0, kind == 1, kind == 2, kind == 3]) for kind in test_dat
 y_predict = linear_svm.predict(X_test)
 print sum(y_predict == y_test) / float(len(y_predict))
 
-y_score = linear_svm.decision_function(X_test)
+y_score = linear_svm.decision_function(X_test_)
 precison, recall, threshold = precision_recall_curve(y_test,y_score)
 plt.plot(precison,recall)
 
@@ -80,3 +80,9 @@ for k in vectorizer.vocabulary_:
     l.append((vectorizer.vocabulary_[k],k))
 
 l.sort(reverse=True)
+
+
+
+
+
+

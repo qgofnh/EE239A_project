@@ -28,27 +28,19 @@ def tokenize(text):
     stems = stem_tokens(tokens, stemmer)
     return stems
 
-categories = [ 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
-                        'rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey']
+categories = ['comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware', 'misc.forsale', 'soc.religion.christian']
 
 
 training_data = fetch_20newsgroups(subset='train', categories=categories, shuffle=True, random_state=42)
 test_data = fetch_20newsgroups(subset='test', categories=categories, shuffle=True, random_state=42)
 
-counts = [sum(training_data['target'] == i) for i in range(8)]
-
-hist = pd.DataFrame({'count': counts})
-
-plt.figure()
-hist.plot(kind='bar',alpha=0.5)
-
 ###############################################
-# initialize vectorizer, tfidf transformer and SVD
-vectorizer = CountVectorizer(min_df=1,tokenizer=tokenize,stop_words=text.ENGLISH_STOP_WORDS)
+############## initialize vectorizer, tfidf transformer and SVD
+vectorizer = CountVectorizer(min_df=1,stop_words=text.ENGLISH_STOP_WORDS)
 tfidf = TfidfTransformer(sublinear_tf=True, use_idf=True)
 svd = TruncatedSVD(n_components=50, random_state=1, algorithm="arpack")
 
-# prepare training data
+############## prepare training data
 vectorizer.fit(training_data['data'])
 print "finished fitting vectorizer"
 X_train_vec = vectorizer.transform(training_data['data'])
@@ -59,32 +51,23 @@ print "finished tfidf transform"
 svd.fit((X_train_tfidf))
 X_train = svd.fit_transform(X_train_tfidf)
 print "finished SVD dimension reduction"
-y_train = [sum([kind == 0, kind == 1, kind == 2, kind == 3]) for kind in training_data['target']]
+y_train = training_data['target']
 
-# prepare testing data
+############## prepare testing data
 X_test_vec = vectorizer.transform(test_data['data'])
 X_test_tfidf = tfidf.transform(X_test_vec)
 X_test = svd.transform(X_test_tfidf)
-y_test = [sum([kind == 0, kind == 1, kind == 2, kind == 3]) for kind in test_data['target']]
+y_test = test_data['target']
 
-# train models
-nb = MultinomialNB().fit(X_train, y_train)
-linear_svm = svm.SVC(kernel='linear',C=1).fit(X_train,y_train)
+############## train models
+nb = MultinomialNB().fit(X_train_tfidf, y_train)
+linear_svm_one_vs_one = svm.SVC(kernel='linear',C=1).fit(X_train_tfidf,y_train)
+linear_svm_one_vs_rest = svm.LinearSVC().fit(X_train_tfidf,y_train)
 
-# perform classification
-y_predict = linear_svm.predict(X_test)
-print sum(y_predict == y_test) / float(len(y_predict))
+############## perform classification
+model = linear_svm_one_vs_rest
 
-y_score = linear_svm.decision_function(X_test)
-precison, recall, threshold = precision_recall_curve(y_test,y_score)
-plt.plot(precison,recall)
+y_predict = model.predict(X_test_tfidf)
+print model.score(X_test_tfidf,y_test)                  # mean accuracy
 
-fpr, tpr, thr = roc_curve(y_test,y_score)
-roc_auc = auc(fpr,tpr)
-plt.plot(fpr,tpr)
-
-l = []
-for k in vectorizer.vocabulary_:
-    l.append((vectorizer.vocabulary_[k],k))
-
-l.sort(reverse=True)
+y_score = model.decision_function(X_test_tfidf)         # signed distance to the hyperplane

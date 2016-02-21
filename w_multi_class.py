@@ -36,7 +36,7 @@ test_data = fetch_20newsgroups(subset='test', categories=categories, shuffle=Tru
 
 ###############################################
 ############## initialize vectorizer, tfidf transformer and SVD
-vectorizer = CountVectorizer(min_df=1,stop_words=text.ENGLISH_STOP_WORDS)
+vectorizer = CountVectorizer(min_df=.01,stop_words=text.ENGLISH_STOP_WORDS,tokenizer=tokenize)
 tfidf = TfidfTransformer(sublinear_tf=True, use_idf=True)
 svd = TruncatedSVD(n_components=50, random_state=1, algorithm="arpack")
 

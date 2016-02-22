@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import cPickle,gzip
 
-categories = [ 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
-                        'rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey']
+categories = ['comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
+                'rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey']
 
 
 training_data = fetch_20newsgroups(subset='train', categories=categories, shuffle=True, random_state=42)

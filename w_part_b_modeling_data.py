@@ -8,7 +8,6 @@ Part b
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction import text
 from sklearn.feature_extraction.text import TfidfTransformer
-from nltk import word_tokenize
 from nltk.stem.porter import PorterStemmer
 import string
 import numpy as np
@@ -24,7 +23,7 @@ def stem_tokens(tokens, stemmer):
     return stemmed
 
 def tokenize(txt):
-    tokens = re.findall('(?u)\\b\\w\\w+\\b',re.sub('[0-9.]*','',txt.lower()))
+    tokens = re.findall('(?u)\\b\\w\\w+\\b',re.sub('[0-9.]+','',txt.lower()))
     tokens_wo_stop = [item for item in tokens if item not in text.ENGLISH_STOP_WORDS]
     stems = stem_tokens(tokens_wo_stop, stemmer)
     return stems

@@ -1,3 +1,10 @@
+"""
+EE239AS Project 2
+Author: Will, Hoooga, Xiaoyu, k
+
+Part c
+"""
+
 from sklearn.datasets import fetch_20newsgroups
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -18,7 +25,7 @@ from nltk import SnowballStemmer
 import numpy as np
 import cPickle,gzip
 
-stemmer = PorterStemmer()
+stemmer = SnowballStemmer('english')
 def stem_tokens(tokens, stemmer):
     stemmed = []
     for item in tokens:
@@ -30,7 +37,7 @@ def tokenize(txt):
     # tokens = word_tokenize(txt)
     # tokens = [i for i in tokens if i not in string.punctuation]
 
-    tokens = re.findall('(?u)\\b\\w\\w+\\b',re.sub('[0-9.]*','',txt.lower()))
+    tokens = re.findall('(?u)\\b\\w\\w+\\b',re.sub('[0-9.]+','',txt.lower()))
     tokens_wo_stop = [item for item in tokens if item not in text.ENGLISH_STOP_WORDS]
     stems = stem_tokens(tokens_wo_stop, stemmer)
     return stems
@@ -47,34 +54,42 @@ dt = training_data['data']
 typ = training_data['target']
 dt_typ = dict(zip(dt,typ))
 X_data = ['']*20                                        # put all documents in the same class together
-for data,type in dt_typ.items():
-    X_data[type] = X_data[type] + data
+for data,typ in dt_typ.items():
+    X_data[typ] = X_data[typ] + data
 
-X_tokens = [tokenize(item) for item in X_data]
+X_tokens = [tokenize(item) for item in X_data]          # tokens of the 20 classes
 
-count = [dict(),dict(),dict(),dict()]
+count = [dict(),dict(),dict(),dict()]                   # count terms in the 4 specific classes
 i = 0
-for k in [3,4,6,15]:
+for k in [3,4,6,15]:                                    # categories = ['comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware', 'misc.forsale', 'soc.religion.christian']
     for item in X_tokens[k]:
         count[i][item] = count[i].get(item,0) + 1
     i += 1
 
-l = []
-for term,c in count[2].items():
-    l.append((c,term))
+for clss in range(4):
+    l = []                                                  # sort tokens in a class
+    for term,c in count[0].items():
+        l.append((c,term))
+    l.sort(reverse=True)
 
-l.sort(reverse=True)
+    ls = []                                                 # calculate tf-icf
+    for c,t in l:
+        ls.append(((.5+.5*c/l[0][0])*np.log(20/(np.asarray([t in item for item in X_tokens]).sum())),t))
+    ls.sort(reverse=True)
+    print "hello"
 
-ls = []
-for c,t in l:
-    ls.append(((.5+.5*c/l[0][0])*np.log(4/(np.asarray([t in item for item in X_tokens]).sum())),t))
-    # print t,np.asarray([t in item for item in X_tokens]).sum()
-
-
-ls.sort(reverse=True)
-# np.asanyarray(count[1].values()).sum()
-print "done"
+    tficf = []
+    tficf.append(ls[0:20])
+    print ls[0:10]
 
 with gzip.open('class-2_top10.gz','wb') as f:
   cPickle.dump(ls,f)
 f.close()
+
+class_2 = ls[0:20]
+class_1 = ls[0:20]
+class_0 = ls[0:20]
+class_3 = ls[0:20]
+
+tficf = []
+tficf.append(class_0)
